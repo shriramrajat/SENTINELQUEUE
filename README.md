@@ -1,4 +1,4 @@
-# SentinelQueue
+# SENTINELQUEUE
 
 SentinelQueue is a distributed background job processing system designed to handle heavy workloads outside of the main HTTP request lifecycle. 
 
