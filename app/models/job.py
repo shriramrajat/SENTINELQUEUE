@@ -7,6 +7,7 @@ from app.core.database import Base
 
 class JobStatus(str, enum.Enum):
     QUEUED = "queued"
+    SCHEDULED = "scheduled"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
@@ -28,6 +29,7 @@ class Job(Base):
     status = Column(Enum(JobStatus), default=JobStatus.QUEUED, index=True, nullable=False)
     priority = Column(Enum(JobPriority), default=JobPriority.MEDIUM, index=True, nullable=False)
     
+    execute_at = Column(DateTime(timezone=True), nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     started_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
