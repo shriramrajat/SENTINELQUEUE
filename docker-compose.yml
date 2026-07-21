@@ -21,6 +21,50 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
+  api:
+    build: .
+    container_name: sentinelqueue-api
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build: .
+    container_name: sentinelqueue-worker
+    command: python -m app.workers.main
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  scheduler:
+    build: .
+    container_name: sentinelqueue-scheduler
+    command: python -m app.scheduler.main
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
