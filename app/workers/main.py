@@ -1,6 +1,7 @@
 import time
 import socket
 import logging
+import uuid
 from datetime import datetime, timezone
 from app.core.redis import redis_client
 from app.core.database import SessionLocal
@@ -15,9 +16,11 @@ MAX_RETRIES = 3
 
 def process_job(job_id: str):
     db = SessionLocal()
+    job = None
     try:
         # Fetch the job from Postgres
-        job = db.query(Job).filter(Job.id == job_id).first()
+        job_uuid = uuid.UUID(job_id)
+        job = db.query(Job).filter(Job.id == job_uuid).first()
         if not job:
             logger.error(f"Job {job_id} found in Redis but missing from Postgres!")
             return
